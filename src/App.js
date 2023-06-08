@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function App() {
   const [todo, setTodo] = useState("");
@@ -12,7 +12,6 @@ function App() {
     setTodos((currentArray) => [todo, ...currentArray]);
     setTodo("");
   };
-  console.log(todos);
   return (
     <div>
       <h1>My To Dos({todos.length})</h1>
@@ -25,6 +24,12 @@ function App() {
         />
         <button>Add To Do</button>
       </form>
+      <hr />
+      <ul>
+        {todos.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }
