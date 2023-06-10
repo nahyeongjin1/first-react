@@ -2,70 +2,42 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [coins, setCoins] = useState([]);
-  const [dollarInput, setDollarInput] = useState("");
-  const [exchangeRate, setExchangeRate] = useState(1);
-  const [symbol, setSymbol] = useState("BTC");
-  const [result, setResult] = useState("");
+  const [movies, setMovies] = useState([]);
 
-  const onOptionChange = (event) => {
-    const selectedCoinId = event.target.value;
-    const selectedCoin = coins.find((coin) => coin.id === selectedCoinId);
-    setExchangeRate(selectedCoin.quotes.USD.price);
-    setSymbol(selectedCoin.symbol);
-  };
-
-  const onInputChange = (event) => {
-    setDollarInput(event.target.value);
-    setResult("");
-  };
-
-  const onInputSubmit = (event) => {
-    event.preventDefault();
-    if (exchangeRate === 1) {
-      const defaultExchangeRate = coins.find((coin) => coin.rank === 1).quotes
-        .USD.price;
-      setExchangeRate(defaultExchangeRate);
-    }
-    setResult(parseFloat(dollarInput) / exchangeRate);
+  const getMovie = async () => {
+    const response = await fetch(
+      "https://yts.mx/api/v2/list_movies.json?minimum_rating=9.1&sort_by=year"
+    );
+    const json = await response.json();
+    setMovies(json.data.movies);
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetch("https://api.coinpaprika.com/v1/tickers")
-      .then((response) => response.json())
-      .then((json) => {
-        setCoins(json);
-        setLoading(false);
-      });
+    getMovie();
   }, []);
 
   return (
     <div>
-      <h1>The Coins! {coins.length > 0 ? `(${coins.length})` : null}</h1>
       {loading ? (
-        <strong>Loading...</strong>
+        <h1>Loading...</h1>
       ) : (
         <div>
-          <select onChange={onOptionChange}>
-            {coins.map((coin) => (
-              <option key={coin.id} value={coin.id}>
-                {coin.name} ({coin.symbol}): ${coin.quotes.USD.price} USD
-              </option>
-            ))}
-          </select>
-          <form onSubmit={onInputSubmit}>
-            <input
-              onChange={onInputChange}
-              value={dollarInput}
-              placeholder="Input USD..."
-              type="number"
-              min={0}
-            />
-            <input type="submit" value={"Go!"} />
-          </form>
-          {result === "" ? null : (
-            <p>{`${dollarInput} USD => ${result} ${symbol}`}</p>
-          )}
+          {movies.map((movie) => (
+            <div key={movie.id}>
+              <img src={movie.medium_cover_image} />
+              <h2>{movie.title}</h2>
+              <p>{movie.summary}</p>
+              <ul>
+                {movie.hasOwnProperty("genres")
+                  ? movie.genres.map((genre, index) => (
+                      <li key={index}>{genre}</li>
+                    ))
+                  : null}
+              </ul>
+              <hr />
+            </div>
+          ))}
         </div>
       )}
     </div>
