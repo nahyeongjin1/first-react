@@ -6,7 +6,7 @@ function Movie({ movie }) {
     <div>
       <img src={movie.medium_cover_image} alt={movie.title} />
       <h2>
-        <Link to={"/movie"}>{movie.title}</Link>
+        <Link to={`/movie/${movie.id}`}>{movie.title}</Link>
       </h2>
       <p>{movie.summary}</p>
       <ul>
